@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>basic chat app</title>
+</head>
+<body>
+    <h1>Basic chat app</h1>
+    <form action="" style="min-width: 300px;width:90vw;margin:auto; " id="form">
+        <input style="padding: 1rem;width:70%" type="text" name="message" id="message">
+        <button type="submit" style="padding: 1rem ;width: 20%; margin-left: 1rem;">send</button>
+    </form>
+    <ul id="all_message">
+
+    </ul>
+</body>
+<!-- this socket.io.js is added by the server  -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    //io is added by socket.io.js 
+    const message = document.querySelector('#message')
+    const all_message = document.querySelector('#all_message')
+    const form=document.querySelector('#form')
+    const socket = io("ws://localhost:3000");
+    socket.on("connect", () => {
+        console.log(socket.id);
+    });
+    // on submiting form i will sent message to server server then pass it to all socket who are connected
+form.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    socket.emit('clientMessage', message.value)
+    message.value='';
+})
+// on getting message it will append it to the screen
+    socket.on('serverMessage', (data) => {
+        const li = document.createElement('li');
+        li.innerText = data;
+        all_message.appendChild(li);
+    })
+   socket.on('newConnection',(data)=>{
+        const li = document.createElement('li');
+        li.innerText = data;
+        all_message.appendChild(li);
+   })
+</script>
+
+</html>
